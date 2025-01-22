@@ -5,16 +5,16 @@
 
 using namespace std;
 
-vector<string> loadField(const string& filename) 
+vector<string> loadField(const string& filename)
 {
     vector<string> field;
 
     ifstream file(filename);
 
-    if (file.is_open()) 
+    if (file.is_open())
     {
         string line;
-        while (getline(file, line)) 
+        while (getline(file, line))
         {
             field.push_back(line);
         }
@@ -24,22 +24,39 @@ vector<string> loadField(const string& filename)
         }
         file.close();
     }
-    else 
+    else
     {
         cout << "Не удалось открыть файл: " << filename << endl;
     }
     return field;
 }
 
-bool checkShips(const vector<string>& field) 
+bool checkShips(const vector<string>& field)
 {
-    if (field.size() != 10 || field[0].size() != 10) 
+    if (field.size() != 10)
     {
-        cout << "Поля не соответствуют требованиям" << endl;
+        cout << "Поля не соответствуют требованиям: неверное количество строк" << endl;
         return false;
     }
 
-    for (int row = 0; row < 10; ++row) 
+    for (int i = 0; i < field.size(); ++i)
+    {
+        if (field[i].size() != 10)
+        {
+            cout << "Поля не соответствуют требованиям: пустой или лишний символ в строке " << i + 1 << endl;
+            return false;
+        }
+        for (int j = 0; j < field[i].size(); ++j)
+        {
+            if (field[i][j] != '0' && field[i][j] != '*')
+            {
+                cout << "Поля не соответствуют требованиям: недопустимый символ '" << field[i][j] << "' в строке " << i + 1 << ", позиции " << j + 1 << endl;
+                return false;
+            }
+        }
+    }
+
+    for (int row = 0; row < 10; ++row)
     {
         for (int col = 0; col < 10; ++col)
         {
@@ -58,30 +75,30 @@ bool checkShips(const vector<string>& field)
     }
     return true;
 }
-bool isValidBattlefield(vector<string>& field) 
+bool isValidBattlefield(vector<string>& field)
 {
     vector<int> shipCounts(5, 0);
 
-    for (int i = 0; i < 10; ++i) 
+    for (int i = 0; i < 10; ++i)
     {
-        for (int j = 0; j < 10; ++j) 
+        for (int j = 0; j < 10; ++j)
         {
-            if (field[i][j] == '*') 
+            if (field[i][j] == '*')
             {
                 int length = 0;
-                if (j + 1 < 10 && field[i][j + 1] == '*') 
+                if (j + 1 < 10 && field[i][j + 1] == '*')
                 {
-                    while (j + length < 10 && field[i][j + length] == '*') 
+                    while (j + length < 10 && field[i][j + length] == '*')
                     {
-                        field[i][j + length] = '.'; 
+                        field[i][j + length] = '.';
                         length++;
                     }
                 }
-                else 
+                else
                 {
-                    while (i + length < 10 && field[i + length][j] == '*') 
+                    while (i + length < 10 && field[i + length][j] == '*')
                     {
-                        field[i + length][j] = '.'; 
+                        field[i + length][j] = '.';
                         length++;
                     }
                 }
@@ -95,11 +112,11 @@ bool isValidBattlefield(vector<string>& field)
             }
         }
     }
-    cout <<"Четырехпалубных кораблей - " << shipCounts[4] << endl << "Трёхпалубных кораблей - " << shipCounts[3]<< endl <<"Двухпалубных кораблей - " << shipCounts[2] << endl << "Однопалубных кораблей - " << shipCounts[1] << endl;
+    cout << "Четырехпалубных кораблей - " << shipCounts[4] << endl << "Трёхпалубных кораблей - " << shipCounts[3] << endl << "Двухпалубных кораблей - " << shipCounts[2] << endl << "Однопалубных кораблей - " << shipCounts[1] << endl;
     return (shipCounts[4] == 1 && shipCounts[3] == 2 && shipCounts[2] == 3 && shipCounts[1] == 4);
 }
 
-int main() 
+int main()
 {
     setlocale(LC_ALL, "rus");
     string filename = "field.txt";
@@ -110,10 +127,9 @@ int main()
     {
         cout << "Заполнено корректно" << endl;
     }
-    else 
+    else
     {
         cout << "Заполнено некорректно" << endl;
     }
-    
     return 0;
 }
